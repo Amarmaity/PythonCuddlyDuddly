@@ -14,6 +14,31 @@ class MasterProduct(models.Model):
 
 
 
+# Category table
+class Category(models.Model):
+    name = models.CharField(max_length=100,default="temp-name")
+    slug = models.CharField(max_length=100, unique=True, default="temp-slug")
+    description = models.TextField(null=True)
+    image_url = models.CharField(max_length=255, null=True)
+    created_at = models.DateTimeField(default=timezone.now)  
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+
+
+
+
+#
+
+
+
+
+
+
+
 from django.db import models
 from django.contrib.auth.hashers import make_password
 
