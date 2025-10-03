@@ -30,20 +30,20 @@ def login_view(request):
         if form.is_valid():
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
-
             try:
                 user = User.objects.get(email=email)
-                if user.check_password(password):
-                    request.session["user_id"] = user.id
-                    messages.success(request, f"Welcome {user.name}!")
-                    return redirect("home")
+                if user.user_type in ["admin", "super_admin"] and user.check_password(password):
+                    request.session["admin_id"] = user.id
+                    messages.success(request, f"Welcome Admin {user.name}!")
+                    return redirect("admin_dashboard")
                 else:
-                    messages.error(request, "Invalid password")
+                    messages.error(request, "Invalid credentials or not an admin")
             except User.DoesNotExist:
-                messages.error(request, "No user with this email")
+                messages.error(request, "No user found with this email")
     else:
         form = UserLoginForm()
-    return render(request, "auth/login.html", {"form": form})
+    return render(request, "admin/auth/login.html", {"form": form})
+
 
 
 def home_view(request):

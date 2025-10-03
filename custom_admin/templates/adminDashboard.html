@@ -1,0 +1,79 @@
+{% extends 'custom_admin/templates/adminbase.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white shadow rounded-lg p-4 text-center">
+            <i class="bi bi-box-seam text-3xl text-blue-500"></i>
+            <h5 class="mt-2 text-xl font-semibold">1,240</h5>
+            <p class="text-gray-500 text-sm">Products</p>
+        </div>
+        <div class="bg-white shadow rounded-lg p-4 text-center">
+            <i class="bi bi-people text-3xl text-green-500"></i>
+            <h5 class="mt-2 text-xl font-semibold">8,540</h5>
+            <p class="text-gray-500 text-sm">Customers</p>
+        </div>
+        <div class="bg-white shadow rounded-lg p-4 text-center">
+            <i class="bi bi-cart-check text-3xl text-yellow-500"></i>
+            <h5 class="mt-2 text-xl font-semibold">3,210</h5>
+            <p class="text-gray-500 text-sm">Orders</p>
+        </div>
+        <div class="bg-white shadow rounded-lg p-4 text-center">
+            <i class="bi bi-currency-dollar text-3xl text-red-500"></i>
+            <h5 class="mt-2 text-xl font-semibold">$98,450</h5>
+            <p class="text-gray-500 text-sm">Revenue</p>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="border-b px-4 py-2">
+            <h6 class="text-lg font-semibold">Recent Orders</h6>
+        </div>
+        <div class="p-4 overflow-x-auto">
+            <table class="min-w-full table-auto border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 text-left">
+                        <th class="px-4 py-2">#</th>
+                        <th class="px-4 py-2">Customer</th>
+                        <th class="px-4 py-2">Product</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-2">#1001</td>
+                        <td class="px-4 py-2">Rahul Sharma</td>
+                        <td class="px-4 py-2">iPhone 15</td>
+                        <td class="px-4 py-2"><span class="px-2 py-1 text-sm rounded bg-green-500 text-white">Completed</span></td>
+                        <td class="px-4 py-2">02 Sep 2025</td>
+                        <td class="px-4 py-2">$1200</td>
+                    </tr>
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-2">#1002</td>
+                        <td class="px-4 py-2">Ananya Singh</td>
+                        <td class="px-4 py-2">MacBook Pro</td>
+                        <td class="px-4 py-2"><span class="px-2 py-1 text-sm rounded bg-yellow-500 text-white">Pending</span></td>
+                        <td class="px-4 py-2">01 Sep 2025</td>
+                        <td class="px-4 py-2">$2200</td>
+                    </tr>
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-2">#1003</td>
+                        <td class="px-4 py-2">Vikram Patel</td>
+                        <td class="px-4 py-2">Samsung Galaxy S24</td>
+                        <td class="px-4 py-2"><span class="px-2 py-1 text-sm rounded bg-red-500 text-white">Cancelled</span></td>
+                        <td class="px-4 py-2">31 Aug 2025</td>
+                        <td class="px-4 py-2">$999</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

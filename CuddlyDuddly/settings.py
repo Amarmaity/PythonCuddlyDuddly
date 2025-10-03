@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api',
-    'widget_tweaks'
+    'widget_tweaks',
+    'custom_admin',
     
 ]
 

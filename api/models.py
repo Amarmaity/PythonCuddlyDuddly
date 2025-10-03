@@ -1,6 +1,11 @@
+from enum import unique
 from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone 
+from phonenumber_field.modelfields import PhoneNumberField
+
+
+
 
 # Create your models here.
 class MasterProduct(models.Model):
@@ -27,21 +32,6 @@ class Category(models.Model):
         return self.name
 
 
-
-
-
-
-#
-
-
-
-
-
-
-
-from django.db import models
-from django.contrib.auth.hashers import make_password
-
 class User(models.Model):
     USER_TYPES = [
         ("admin", "Admin"),
@@ -52,8 +42,12 @@ class User(models.Model):
 
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    user_type = models.CharField(max_length=50, choices=USER_TYPES)  
+    user_type = models.CharField(max_length=50, choices=USER_TYPES) 
+    phone = PhoneNumberField(("Phone number"), unique=True, blank=False, null=False)
     password = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'api_user'
 
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
