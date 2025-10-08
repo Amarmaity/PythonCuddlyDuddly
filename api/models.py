@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone 
 from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth.hashers import make_password, check_password as django_check_password
 
 
 
@@ -50,7 +51,10 @@ class User(models.Model):
         db_table = 'api_user'
 
     def set_password(self, raw_password):
-        self.password = make_password(raw_password)
+        return django_check_password(raw_password, self.password)
+
+    def check_password(self, raw_password):
+        return django_check_password(raw_password, self.password)
 
     def __str__(self):
         return f"{self.name} ({self.email})"
