@@ -1,0 +1,13 @@
+# Python
+*.pyc
+__pycache__/
+
+# Virtual environment
+env/
+
+# Static files (if you don't want to track them)
+static/
+
+# Django
+db.sqlite3
+media/
