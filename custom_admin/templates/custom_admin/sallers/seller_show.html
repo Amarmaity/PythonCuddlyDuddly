@@ -1,0 +1,114 @@
+{% extends "custom_admin/layouts/adminBash.html" %}
+{% load static %}
+
+{% block title %}Seller Application Details{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <h5 class="text-lg font-semibold flex items-center text-blue-600">
+            <i class="bi bi-info-circle mr-2"></i> Seller Application Details
+        </h5>
+        <a href="{% url 'custom_admin:admin_sellers_index' %}" 
+           class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center shadow-sm">
+           <i class="bi bi-arrow-left mr-1"></i> Back
+        </a>
+    </div>
+
+    <!-- Body -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left column -->
+        <div>
+            <h6 class="text-gray-500 mb-3 font-medium">Basic Information</h6>
+            <ul class="space-y-2">
+                <li class="flex items-center">
+                    <i class="bi bi-shop text-gray-400 mr-2"></i>
+                    <span class="font-semibold mr-1">Business Name:</span> {{ seller.name }}
+                </li>
+                <li class="flex items-center">
+                    <i class="bi bi-person text-gray-400 mr-2"></i>
+                    <span class="font-semibold mr-1">Contact Person:</span> {{ seller.contact_person }}
+                </li>
+                <li class="flex items-center">
+                    <i class="bi bi-envelope text-gray-400 mr-2"></i>
+                    <span class="font-semibold mr-1">Email:</span> {{ seller.email }}
+                </li>
+                <li class="flex items-center">
+                    <i class="bi bi-telephone text-gray-400 mr-2"></i>
+                    <span class="font-semibold mr-1">Phone:</span> {{ seller.phone }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right column -->
+        <div>
+            <h6 class="text-gray-500 mb-3 font-medium">Application Status</h6>
+            <ul class="space-y-2">
+                <li class="flex items-center">
+                    <i class="bi bi-flag text-gray-400 mr-2"></i>
+                    <span class="font-semibold mr-1">Status:</span>
+                    <span class="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full text-xs font-medium">
+                        {{ seller.application_status|capfirst }}
+                    </span>
+                </li>
+                <li class="flex items-center">
+                    <i class="bi bi-shield-check text-gray-400 mr-2"></i>
+                    <span class="font-semibold mr-1">Compliance:</span>
+                    <span class="{% if seller.compliance_status == 'verified' %}bg-green-500 text-white
+                                  {% elif seller.compliance_status == 'rejected' %}bg-red-500 text-white
+                                  {% else %}bg-gray-400 text-white{% endif %} px-2 py-1 rounded-full text-xs font-medium">
+                        {{ seller.compliance_status|default:"Pending"|capfirst }}
+                    </span>
+                </li>
+                <li class="flex items-center">
+                    <i class="bi bi-toggle-on text-gray-400 mr-2"></i>
+                    <span class="font-semibold mr-1">Active:</span>
+                    <span class="{% if seller.is_active %}bg-green-500 text-white{% else %}bg-gray-400 text-white{% endif %} px-2 py-1 rounded-full text-xs font-medium">
+                        {% if seller.is_active %}Yes{% else %}No{% endif %}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="my-6 border-gray-200">
+
+    <!-- Documents -->
+    <div class="mb-6">
+        <h6 class="text-gray-500 mb-3 font-medium">Documents</h6>
+        {% if seller.documents %}
+            <a href="{% url 'custom_admin:seller_docs' seller.id %}" 
+               class="bg-white border border-blue-500 text-blue-600 hover:bg-blue-50 px-3 py-1 rounded-full text-sm inline-flex items-center shadow-sm">
+               <i class="bi bi-download mr-1"></i> Download Documents
+            </a>
+        {% else %}
+            <span class="text-gray-400 inline-flex items-center">
+                <i class="bi bi-file-earmark-x mr-1"></i> No documents uploaded
+            </span>
+        {% endif %}
+    </div>
+
+    <!-- Actions -->
+    {% if seller.compliance_status == 'pending' %}
+        <div class="flex space-x-3">
+            <form action="{% url 'custom_admin:approve_seller' seller.id %}" method="POST" 
+                  onsubmit="return confirm('Approve this seller?');">
+                {% csrf_token %}
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-600 flex items-center">
+                    <i class="bi bi-check-circle mr-1"></i> Approve
+                </button>
+            </form>
+
+            <form action="{% url 'custom_admin:reject_seller' seller.id %}" method="POST" 
+                  onsubmit="return confirm('Reject this seller?');">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-red-600 flex items-center">
+                    <i class="bi bi-x-circle mr-1"></i> Reject
+                </button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

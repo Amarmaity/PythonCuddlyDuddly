@@ -1,5 +1,7 @@
+from dataclasses import field
 from rest_framework import serializers
 from .models import MasterProduct, User
+from .models import Seller
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -20,3 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password) 
         user.save()
         return user
+
+
+class SellerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seller
+        field = "__all__"

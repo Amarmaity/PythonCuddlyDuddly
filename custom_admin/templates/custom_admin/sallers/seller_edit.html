@@ -1,0 +1,52 @@
+{% extends "custom_admin/layouts/adminBash.html" %}
+
+{% block title %}Edit Seller{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h5 class="mb-6 text-lg font-semibold flex items-center text-gray-800">
+        <i class="bi bi-pencil-square mr-2"></i> Edit Seller
+    </h5>
+
+    <form action="{% url 'custom_admin:admin_sellers_update' seller.id %}" method="POST" class="space-y-4">
+        {% csrf_token %}
+        {% comment %} {% method 'PUT' %} {% endcomment %}
+
+        <div>
+            <label class="block text-gray-700 font-medium mb-1"><i class="bi bi-shop mr-1"></i> Business Name</label>
+            <input type="text" name="name" value="{{ seller.name }}" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium mb-1"><i class="bi bi-person mr-1"></i> Contact Person</label>
+            <input type="text" name="contact_person" value="{{ seller.contact_person }}" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium mb-1"><i class="bi bi-envelope mr-1"></i> Email</label>
+                <input type="email" name="email" value="{{ seller.email }}" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1"><i class="bi bi-telephone mr-1"></i> Phone</label>
+                <input type="text" name="phone" value="{{ seller.phone }}" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+
+        <div class="flex space-x-3 mt-4">
+            <button type="submit"
+                    class="bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-full flex items-center">
+                <i class="bi bi-save mr-1"></i> Update
+            </button>
+            <a href="{% url 'custom_admin:admin_sellers_index' %}" 
+               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium px-4 py-2 rounded-full flex items-center">
+                <i class="bi bi-arrow-left mr-1"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

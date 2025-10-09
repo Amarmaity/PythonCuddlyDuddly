@@ -6,7 +6,14 @@ app_name = 'custom_admin'
 urlpatterns = [
     path('',views.admin_dashboard, name='adminDashboard'),
     # Sallers
-    path('sellers/', views.saller_index, name='admin_sellers_index'),
+    path('sellers', views.saller_index, name='admin_sellers_index'),
+    path('create-seller/', views.create_seller, name='admin_sellers_create'),
+    path('sellers/<int:id>/', views.seller_show, name='admin_sellers_show'),
+    path('sellers/<int:id>/edit/', views.edit_seller, name='admin_sellers_edit'),
+    path('sellers/<int:id>/update/', views.update_seller, name='admin_sellers_update'),
+    path('sellers/<int:id>/delete/', views.delete_seller, name='admin_sellers_delete'),
+    path('sellers/<int:id>/approve/', views.approve_seller, name='approve_seller'),
+    path('sellers/<int:id>/reject/', views.reject_seller, name='reject_seller'),
     path('sellers-application/', views.saller_application, name='admin_seller_applications'),
     path('kyc-complince/', views.kyc_compliance, name='admin_sellers_compliance'),
     path('payout/', views.payout, name='admin_payouts'),

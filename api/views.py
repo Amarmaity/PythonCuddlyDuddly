@@ -1,13 +1,12 @@
-from cmath import phase
-from xml.etree.ElementTree import QName
 from django.shortcuts import redirect, render
-from .serializers import ProductSerializer
-from .models import MasterProduct
+from .serializers import ProductSerializer, SellerSerializer
+from .models import MasterProduct, Seller
 from .forms import UserRegistrationForm, UserLoginForm
 from .models import User
 from django.db.models import Q
 from django.contrib import messages
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class ProductViewSet(viewsets.ModelViewSet):
@@ -53,6 +52,14 @@ def logout(request):
     request.session.flush()
     
     return redirect("api:login")
+
+
+# Seller Api end point
+class SellerViewSet(viewsets.ModelViewSet):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    permission_classes = [IsAuthenticated]
+
 
 
 def home_view(request):
