@@ -3,11 +3,14 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
 from api.forms import UserLoginForm
+from django.db.models import Q
 from api.models import Seller, User
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator,  EmptyPage, PageNotAnInteger
 from .decorators import admin_login_required
 from custom_admin.forms import SellerForm
+from http import HTTPStatus 
 # Create your views here.
 
 def admin_dashboard(request):
@@ -19,42 +22,96 @@ def admin_dashboard(request):
 
 
 
+# @admin_login_required
+# def saller_index(request):
+#     seller_list = Seller.objects.all()
+
+#     # Search
+#     search = request.GET.get('search')
+#     if search:
+#         sellers = sellers.filter(
+#             Q(name__icontains=search) |
+#             Q(contact_person__icontains=search) |
+#             Q(email__icontains=search) |
+#             Q(phone__icontains=search)
+#         )
+    
+#     # Status
+#     status = request.GET.get('status')
+#     if status == '1':
+#         sellers = sellers.filter(is_active=True)
+#     elif status == '0':
+#         sellers = sellers.filter(is_active=False)
+    
+#     # Sort
+#     sort = request.GET.get('sort')
+#     if sort == 'latest':
+#         sellers = sellers.order_by('-created_at')
+#     elif sort == 'oldest':
+#         sellers = sellers.order_by('created_at')
+#     elif sort == 'name':
+#         sellers = sellers.order_by('name')
+    
+
+#     paginator = Paginator(seller_list, 10)
+#     page_number = request.GET.get('page')
+#     sellers = paginator.get_page(page_number)
+#     return render(request, "custom_admin/sallers/index.html", {"sellers": sellers})
+
+
 @admin_login_required
 def saller_index(request):
-    seller_list = Seller.objects.all()
+    try:
+        sellers = Seller.objects.all()
 
-    # Search
-    search = request.GET.get('search')
-    if search:
-        sellers = sellers.filter(
-            Q(name__icontains=search) |
-            Q(contact_person__icontains=search) |
-            Q(email__icontains=search) |
-            Q(phone__icontains=search)
-        )
-    
-    # Status
-    status = request.GET.get('status')
-    if status == '1':
-        sellers = sellers.filter(is_active=True)
-    elif status == '0':
-        sellers = sellers.filter(is_active=False)
-    
-    # Sort
-    sort = request.GET.get('sort')
-    if sort == 'latest':
-        sellers = sellers.order_by('-created_at')
-    elif sort == 'oldest':
-        sellers = sellers.order_by('created_at')
-    elif sort == 'name':
-        sellers = sellers.order_by('name')
-    
+        # --- Search ---
+        search = request.GET.get('search')
+        if search:
+            sellers = sellers.filter(
+                Q(name__icontains=search) |
+                Q(contact_person__icontains=search) |
+                Q(email__icontains=search) |
+                Q(phone__icontains=search)
+            )
 
-    paginator = Paginator(seller_list, 10)
-    page_number = request.GET.get('page')
-    sellers = paginator.get_page(page_number)
-    return render(request, "custom_admin/sallers/index.html", {"sellers": sellers})
+        # --- Status Filter ---
+        status = request.GET.get('status')
+        if status == '1':
+            sellers = sellers.filter(is_active=True)
+        elif status == '0':
+            sellers = sellers.filter(is_active=False)
 
+        # --- Sort ---
+        sort = request.GET.get('sort')
+        if sort == 'latest':
+            sellers = sellers.order_by('-created_at')
+        elif sort == 'oldest':
+            sellers = sellers.order_by('created_at')
+        elif sort == 'name':
+            sellers = sellers.order_by('name')
+
+        # --- Handle Empty Result ---
+        if not sellers.exists():
+            return HttpResponse(
+                "<h3>No sellers found matching your criteria.</h3>",
+                status=HTTPStatus.NOT_FOUND  
+            )
+
+        # --- Pagination ---
+        paginator = Paginator(sellers, 10)
+        page_number = request.GET.get('page')
+
+        try:
+            sellers_page = paginator.get_page(page_number)
+        except (EmptyPage, PageNotAnInteger):
+            sellers_page = paginator.get_page(1)
+
+        # --- Render Success ---
+        return render(request,"custom_admin/sallers/index.html",{"sellers": sellers_page},status=HTTPStatus.OK)
+
+    except Exception as e:
+        # --- Catch unexpected errors ---
+        return JsonResponse({"error": str(e)},status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 
@@ -83,12 +140,10 @@ def create_seller(request):
 
 
 
-
 @admin_login_required
 def seller_show(request, id):
     seller = get_object_or_404(Seller, id=id)
     return render(request, "custom_admin/sallers/seller_show.html", {"seller": seller})
-
 
 
 @admin_login_required
@@ -99,7 +154,6 @@ def edit_seller(request, id):
         form.save()
         return redirect('custom_admin:admin_sellers_index')
     return render(request, "custom_admin/sallers/seller_edit.html", {"form": form, "seller": seller})
-
 
 
 @admin_login_required
@@ -152,10 +206,10 @@ def reject_seller(request, id):
 
 
 
-@login_required
+@admin_login_required
 def saller_application(request):
 
-    return render(request, "custom_admin/sallers/saller_application.html")
+    return render(request, "custom_admin/sallers/sellers_create.html")
 
 
 @login_required
