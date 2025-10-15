@@ -9,6 +9,7 @@ urlpatterns = [
     path('sellers', views.saller_index, name='admin_sellers_index'),
     path('create-seller/', views.create_seller, name='admin_sellers_create'),
     path('sellers/<int:id>/', views.seller_show, name='admin_sellers_show'),
+    path('seller/<int:id>/docs', views.download_docs, name='seller_docs'),
     path('sellers/<int:id>/edit/', views.edit_seller, name='admin_sellers_edit'),
     path('sellers/<int:id>/update/', views.update_seller, name='admin_sellers_update'),
     path('sellers/<int:id>/delete/', views.delete_seller, name='admin_sellers_delete'),

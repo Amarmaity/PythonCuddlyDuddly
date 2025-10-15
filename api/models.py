@@ -8,7 +8,7 @@ from django.utils import timezone
 from numpy import mod
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.hashers import make_password, check_password as django_check_password
-
+from django.core.validators import FileExtensionValidator
 
 
 
@@ -90,11 +90,11 @@ class Seller(models.Model):
     upi_id = models.CharField(max_length=50, null=True, blank=True)
 
     compliance_status = models.CharField(max_length=10, choices=COMPLIANCE_STATUS, default='pending', null=True, blank=True)
+    rejection_reason = models.TextField(null=True, blank=True)
     bank_verified = models.BooleanField(default=False)
 
-    logo = models.CharField(max_length=255, null=True, blank=True)
-    documents = models.CharField(max_length=255, null=True, blank=True)
-
+    logo = models.ImageField(upload_to="sellers/logos/", null=True, blank=True, validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])])
+    documents = models.FileField(upload_to="sellers/documents/", null=True, blank=True, validators=[FileExtensionValidator(['pdf', 'jpg', 'jpeg', 'png'])])
     commission_rate = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
     is_active = models.BooleanField(default=True)

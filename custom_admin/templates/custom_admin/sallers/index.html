@@ -1,5 +1,7 @@
 {% extends "custom_admin/layouts/adminBash.html" %}
 
+{% load static %}
+
 {% block title %}Sellers{% endblock %}
 
 {% block content %}
@@ -49,7 +51,7 @@
     <table class="table-auto w-full text-left border-collapse">
         <thead class="bg-gray-100">
             <tr>
-                <th class="border px-4 py-2">#</th>
+                <th class="border px-4 py-2">SL No</th>
                 <th class="border px-4 py-2">Name</th>
                 <th class="border px-4 py-2">Contact</th>
                 <th class="border px-4 py-2">Email</th>
@@ -61,7 +63,8 @@
         <tbody>
             {% for seller in sellers %}
             <tr>
-                <td class="border px-4 py-2">{{ seller.id }}</td>
+                {% comment %} <td class="border px-4 py-2">{{ seller.id }}</td> {% endcomment %}
+                <td class="border px-4 py-2">{{ forloop.counter }}</td> 
                 <td class="border px-4 py-2">{{ seller.name }}</td>
                 <td class="border px-4 py-2">{{ seller.contact_person }}</td>
                 <td class="border px-4 py-2">{{ seller.email }}</td>
