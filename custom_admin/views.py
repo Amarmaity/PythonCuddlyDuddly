@@ -1,26 +1,84 @@
+import email
 from django.shortcuts import render
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.db.models import Q
-from api.models import Seller, User
+from api.models import Seller
 from django.core.paginator import Paginator,  EmptyPage, PageNotAnInteger
-
 from custom_admin.emails import send_approval_email, send_rejection_email
 from .decorators import admin_login_required
 from custom_admin.forms import SellerForm
 from http import HTTPStatus 
 from django.http import FileResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 import os
+from api.models import User as CustomAdmin
+from django.db.models import Count
 # Create your views here.
 
+User = get_user_model()
+
+
+@csrf_exempt
 def admin_dashboard(request):
+    # Detect if request is JSON (API / Postman)
+    is_json = (
+        request.headers.get("Content-Type", "").startswith("application/json")
+        or request.headers.get("Accept", "").startswith("application/json")
+    )
+
     admin_id = request.session.get("admin_id")
+
+    # Case 1: Not logged in
     if not admin_id:
+        msg = "Authentication required. Please log in first."
+        if is_json:
+            return JsonResponse({"status": "error", "message": msg}, status=401)
+        messages.error(request, msg)
         return redirect("api:login")
-    admin_user = User.objects.get(id=admin_id)
+
+    # Case 2: Fetch admin user
+    try:
+        admin_user = CustomAdmin.objects.get(id=admin_id)
+    except User.DoesNotExist:
+        msg = "Admin not found. Please log in again."
+        if is_json:
+            return JsonResponse({"status": "error", "message": msg}, status=404)
+        messages.error(request, msg)
+        request.session.flush()
+        return redirect("api:login")
+
+    # Case 3: Validate role
+    # if admin_user.user_type not in ["admin", "super_admin"]:
+    #     msg = "You are not authorized to access this page."
+    #     if is_json:
+    #         return JsonResponse({"status": "error", "message": msg}, status=403)
+    #     messages.error(request, msg)
+    #     return redirect("api:login")
+
+    # Case 4: Success
+    if is_json:
+        # ✅ Return structured JSON response
+        return JsonResponse({
+            "status": "success",
+            "message": f"Welcome back, {admin_user.name}!",
+            "data": {
+                "id": admin_user.id,
+                "name": admin_user.name,
+                "email": admin_user.email,
+                "phone": str(admin_user.phone) if admin_user.phone else None,
+                # "user_type": admin_user.user_type,
+            }
+        }, status=200)
+
+    # ✅ Render web page (HTML)
+    messages.success(request, f"Welcome back, {admin_user.name}!")
     return render(request, "custom_admin/adminDashboard.html", {"admin_user": admin_user})
+     
 
 
 

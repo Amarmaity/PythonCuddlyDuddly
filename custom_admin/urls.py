@@ -6,7 +6,7 @@ app_name = 'custom_admin'
 urlpatterns = [
     path('',views.admin_dashboard, name='adminDashboard'),
     # Sallers
-    path('sellers', views.saller_index, name='admin_sellers_index'),
+    path('sellers/', views.saller_index, name='admin_sellers_index'),
     path('create-seller/', views.create_seller, name='admin_sellers_create'),
     path('sellers/<int:id>/', views.seller_show, name='admin_sellers_show'),
     path('seller/<int:id>/docs', views.download_docs, name='seller_docs'),

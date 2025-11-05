@@ -7,7 +7,7 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone 
 from numpy import mod
 from phonenumber_field.modelfields import PhoneNumberField
-from django.contrib.auth.hashers import make_password, check_password as django_check_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import FileExtensionValidator
 
 
@@ -54,11 +54,16 @@ class User(models.Model):
     class Meta:
         db_table = 'api_user'
 
+    # def set_password(self, raw_password):
+    #     return django_check_password(raw_password, self.password)
+
+    # def check_password(self, raw_password):
+    #     return django_check_password(raw_password, self.password)
     def set_password(self, raw_password):
-        return django_check_password(raw_password, self.password)
+        self.password = make_password(raw_password)
 
     def check_password(self, raw_password):
-        return django_check_password(raw_password, self.password)
+        return check_password(raw_password, self.password)
 
     def __str__(self):
         return f"{self.name} ({self.email})"
@@ -102,7 +107,7 @@ class Seller(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = "api_seller"
+        db_table = "api_sellers"
 
     def __str__(self):
         return f"{self.contact_person} ({self.name}) - {self.email}"
