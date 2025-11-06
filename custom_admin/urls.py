@@ -4,7 +4,8 @@ from . import views
 app_name = 'custom_admin'
 
 urlpatterns = [
-    path('',views.admin_dashboard, name='adminDashboard'),
+    # path('',views.admin_dashboard, name='adminDashboard'),
+    path('super-admin-dashboard/', views.admin_dashboard, name='super_admin_dashboard'),
     # Sallers
     path('sellers/', views.saller_index, name='admin_sellers_index'),
     path('create-seller/', views.create_seller, name='admin_sellers_create'),

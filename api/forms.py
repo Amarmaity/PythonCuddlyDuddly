@@ -25,6 +25,32 @@ class UserRegistrationForm(forms.ModelForm):
         return user
 
 
+# class UserLoginForm(forms.Form):
+#     email = forms.EmailField()
+#     password = forms.CharField(widget=forms.PasswordInput)
+
+from django import forms
+
 class UserLoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email_or_phone = forms.CharField(
+        label="Email or Phone",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter your email or phone number"})
+    )
+    password = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(attrs={"placeholder": "Enter your password"}),
+        required=True
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email_or_phone = cleaned_data.get("email_or_phone")
+        password = cleaned_data.get("password")
+
+        if not email_or_phone:
+            raise forms.ValidationError("Please enter your email or phone number.")
+        if not password:
+            raise forms.ValidationError("Please enter your password.")
+        return cleaned_data
+

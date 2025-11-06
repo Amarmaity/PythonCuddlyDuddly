@@ -24,61 +24,121 @@ User = get_user_model()
 
 
 @csrf_exempt
+# def admin_dashboard(request):
+#     # Detect if request is JSON (API / Postman)
+#     is_json = (
+#         request.headers.get("Content-Type", "").startswith("application/json")
+#         or request.headers.get("Accept", "").startswith("application/json")
+#     )
+
+#     admin_id = request.session.get("admin_id")
+
+#     # Case 1: Not logged in
+#     if not admin_id:
+#         msg = "Authentication required. Please log in first."
+#         if is_json:
+#             return JsonResponse({"status": "error", "message": msg}, status=401)
+#         messages.error(request, msg)
+#         return redirect("api:login")
+
+#     # Case 2: Fetch admin user
+#     try:
+#         admin_user = CustomAdmin.objects.get(id=admin_id)
+#     except User.DoesNotExist:
+#         msg = "Admin not found. Please log in again."
+#         if is_json:
+#             return JsonResponse({"status": "error", "message": msg}, status=404)
+#         messages.error(request, msg)
+#         request.session.flush()
+#         return redirect("api:login")
+
+#     # Case 3: Validate role
+#     # if admin_user.user_type not in ["admin", "super_admin"]:
+#     #     msg = "You are not authorized to access this page."
+#     #     if is_json:
+#     #         return JsonResponse({"status": "error", "message": msg}, status=403)
+#     #     messages.error(request, msg)
+#     #     return redirect("api:login")
+
+#     # Case 4: Success
+#     if is_json:
+#         # ✅ Return structured JSON response
+#         return JsonResponse({
+#             "status": "success",
+#             "message": f"Welcome back, {admin_user.name}!",
+#             "data": {
+#                 "id": admin_user.id,
+#                 "name": admin_user.name,
+#                 "email": admin_user.email,
+#                 "phone": str(admin_user.phone) if admin_user.phone else None,
+#                 # "user_type": admin_user.user_type,
+#             }
+#         }, status=200)
+
+#     # ✅ Render web page (HTML)
+#     messages.success(request, f"Welcome back, {admin_user.name}!")
+#     return render(request, "custom_admin/adminDashboard.html", {"admin_user": admin_user})
+     
+
 def admin_dashboard(request):
-    # Detect if request is JSON (API / Postman)
+    # Detect if request is JSON (API/Postman)
     is_json = (
         request.headers.get("Content-Type", "").startswith("application/json")
         or request.headers.get("Accept", "").startswith("application/json")
     )
 
-    admin_id = request.session.get("admin_id")
+    user_id = request.session.get("user_id")  # ✅ FIXED
 
     # Case 1: Not logged in
-    if not admin_id:
+    if not user_id:
         msg = "Authentication required. Please log in first."
         if is_json:
             return JsonResponse({"status": "error", "message": msg}, status=401)
         messages.error(request, msg)
         return redirect("api:login")
 
-    # Case 2: Fetch admin user
+    # Case 2: Fetch logged-in user
     try:
-        admin_user = CustomAdmin.objects.get(id=admin_id)
+        user = User.objects.get(id=user_id)
     except User.DoesNotExist:
-        msg = "Admin not found. Please log in again."
+        msg = "User not found. Please log in again."
         if is_json:
             return JsonResponse({"status": "error", "message": msg}, status=404)
         messages.error(request, msg)
         request.session.flush()
         return redirect("api:login")
 
-    # Case 3: Validate role
-    # if admin_user.user_type not in ["admin", "super_admin"]:
-    #     msg = "You are not authorized to access this page."
-    #     if is_json:
-    #         return JsonResponse({"status": "error", "message": msg}, status=403)
-    #     messages.error(request, msg)
-    #     return redirect("api:login")
+    # Case 3: Check permission — only super_admin or admin allowed
+    if user.user_type not in ["admin", "super_admin"]:
+        msg = "You are not authorized to access this page."
+        if is_json:
+            return JsonResponse({"status": "error", "message": msg}, status=403)
+        messages.error(request, msg)
+        return redirect("api:login")
 
-    # Case 4: Success
+    # Case 4: Success response (API)
     if is_json:
-        # ✅ Return structured JSON response
         return JsonResponse({
             "status": "success",
-            "message": f"Welcome back, {admin_user.name}!",
+            "message": f"Welcome back, {user.name}!",
             "data": {
-                "id": admin_user.id,
-                "name": admin_user.name,
-                "email": admin_user.email,
-                "phone": str(admin_user.phone) if admin_user.phone else None,
-                # "user_type": admin_user.user_type,
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "phone": str(user.phone) if user.phone else None,
+                "user_type": user.user_type,
             }
         }, status=200)
 
-    # ✅ Render web page (HTML)
-    messages.success(request, f"Welcome back, {admin_user.name}!")
-    return render(request, "custom_admin/adminDashboard.html", {"admin_user": admin_user})
-     
+    # Case 5: Render web dashboard based on user type
+    messages.success(request, f"Welcome back, {user.name}!")
+    
+    if user.user_type == "super_admin":
+        return render(request, "custom_admin/super_admin_dashboard.html", {"admin_user": user})
+    elif user.user_type == "admin":
+        return render(request, "custom_admin/adminDashboard.html", {"admin_user": user})
+    else:
+        return redirect("api:login")
 
 
 
